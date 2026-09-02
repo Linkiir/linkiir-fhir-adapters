@@ -1,0 +1,15 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "transform",
+  "node_type_id": "LKFHIR_FHIR_RESOURCE_CREATOR",
+  "interval": false,
+  "node_name": "FHIR Resource Creator",
+  "description": "Maps inbound patient data onto a FHIR R4 Patient template, strips unused null fields, and pushes the clean resource downstream as JSON.",
+  "config": [],
+  "library_deps": {
+    "fhir_resource": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}
