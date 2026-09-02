@@ -1,0 +1,5 @@
+{
+  "name": "fhir_profiling",
+  "description": "FHIR resource profiling tool. Loads FHIR specification profiles from a SQLite database, lists available resources and types, and generates JSON templates with null-valued fields for any resource or complex type.",
+  "version": "1.0.0"
+}

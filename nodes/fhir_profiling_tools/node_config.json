@@ -1,0 +1,50 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_FHIR_PROFILING_TOOLS",
+  "interval": false,
+  "node_name": "FHIR Profiling Tools",
+  "description": "Serves a browser UI listing available FHIR resources and types, and returns JSON templates for any requested resource.",
+  "config": [
+    {
+      "label": "Route Path",
+      "value": "fhir",
+      "field_type": "string",
+      "description": "The URL path this endpoint listens on."
+    },
+    {
+      "label": "Worker Count",
+      "value": 1,
+      "field_type": "number",
+      "description": "The number of parallel Lua VM instances handling concurrent requests."
+    },
+    {
+      "label": "FHIR Version",
+      "value": "4.0.1",
+      "field_type": "list",
+      "description": "The FHIR specification version to load profiles for.",
+      "list_options": [
+        "4.0.1",
+        "4.0.0"
+      ]
+    },
+    {
+      "label": "Refresh",
+      "value": false,
+      "field_type": "bool",
+      "description": "When enabled, the profile database is rebuilt on next request. Disable after the initial load to avoid repeated processing."
+    },
+    {
+      "label": "Specifications Path",
+      "value": "",
+      "field_type": "string",
+      "description": "Absolute path to the Specifications directory containing FHIR profile JSON files and the SQLite database. If empty, defaults to the Specifications/ folder inside the node directory."
+    }
+  ],
+  "library_deps": {
+    "fhir_profiling": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}
