@@ -1,0 +1,70 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_ATHENA_ADAPTER",
+  "interval": true,
+  "node_name": "Athena Adapter",
+  "description": "Queries Athena Health using client_credentials OAuth 2.0 authentication and pushes matching patient resources downstream as JSON. Supports both the proprietary REST API and the FHIR R4 API.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 60000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, the runtime invokes the polling script."
+    },
+    {
+      "label": "Base URL",
+      "value": "https://api.platform.athenahealth.com/",
+      "field_type": "string",
+      "description": "Root URL of the Athena Health API platform. The token endpoint and API paths are appended to it. Use https://api.preview.platform.athenahealth.com/ for sandbox. A trailing slash is added if omitted."
+    },
+    {
+      "label": "Client ID",
+      "value": "",
+      "field_type": "string",
+      "description": "The OAuth client identifier assigned to your application on the Athena developer portal."
+    },
+    {
+      "label": "Client Secret",
+      "value": "",
+      "field_type": "password",
+      "description": "The OAuth client secret paired with the Client ID. Never stored in plaintext."
+    },
+    {
+      "label": "Scopes",
+      "value": "athena/service/Athenanet.MDP.* system/Patient.read",
+      "field_type": "string",
+      "description": "OAuth scopes requested when obtaining an access token, space-separated."
+    },
+    {
+      "label": "Practice ID",
+      "value": "1128700",
+      "field_type": "string",
+      "description": "The Athena practice identifier used in proprietary REST API paths (v1/<practice_id>/...)."
+    },
+    {
+      "label": "Search Query",
+      "value": "firstname=John",
+      "field_type": "string",
+      "description": "Search parameters as a URL query string, for example firstname=John&lastname=Smith. Leave empty to search without filters."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, API requests are simulated and no data leaves the runtime, which is useful while wiring up a workflow. Authentication is always performed live so credential problems surface immediately."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Whether to verify the Athena server's TLS certificate. Leave on outside of local testing against a proxy."
+    }
+  ],
+  "library_deps": {
+    "athena_health": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}

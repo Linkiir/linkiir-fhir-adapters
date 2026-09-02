@@ -1,0 +1,5 @@
+{
+  "name": "athena_health",
+  "description": "Athena Health client. Handles client_credentials OAuth authentication and provides search, create and request helpers for both the proprietary REST API and the FHIR R4 API. Copy the athena_health/ folder into a node and add it to package.path.",
+  "version": "1.0.0"
+}
