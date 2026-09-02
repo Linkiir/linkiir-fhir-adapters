@@ -1,0 +1,9 @@
+{
+  "format": "linkiir.catalog",
+  "format_version": 1,
+  "id": "lkfhir",
+  "name": "Linkiir FHIR Adapters",
+  "publisher": "Linkiir Inc",
+  "description": "Catalog of FHIR adapters and FHIR related tools",
+  "min_grid_version": ""
+}
