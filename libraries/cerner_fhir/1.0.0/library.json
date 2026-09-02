@@ -1,0 +1,5 @@
+{
+  "name": "cerner_fhir",
+  "description": "Cerner FHIR client. Handles SMART backend services authentication (signed JWT client assertion with kid header) and provides search, read, create, update and operation helpers. Copy the cerner_fhir/ folder into a node and add it to package.path.",
+  "version": "1.0.0"
+}

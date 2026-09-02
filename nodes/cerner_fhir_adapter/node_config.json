@@ -1,0 +1,76 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_CERNER_FHIR_ADAPTER",
+  "interval": true,
+  "node_name": "Cerner FHIR Adapter",
+  "description": "Queries a Cerner FHIR server using SMART backend services JWT-bearer authentication and pushes each returned resource downstream as JSON.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 60000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, the runtime invokes the polling script."
+    },
+    {
+      "label": "Base URL",
+      "value": "",
+      "field_type": "string",
+      "description": "The base Cerner FHIR endpoint for your tenant. This must match the tenant used when issuing OAuth tokens and should not include resource paths like '/Patient'. A trailing slash is added if missing."
+    },
+    {
+      "label": "Client ID",
+      "value": "",
+      "field_type": "string",
+      "description": "The OAuth client identifier assigned to your Cerner application on CernerCentral."
+    },
+    {
+      "label": "Private Key Path",
+      "value": "",
+      "field_type": "file_path",
+      "description": "Absolute path to the PEM-encoded RSA private key whose public key is registered in the JWKS on the CernerCentral System Account. Read at authentication time and never copied into the node config."
+    },
+    {
+      "label": "Key ID",
+      "value": "",
+      "field_type": "string",
+      "description": "The kid (Key ID) identifying which public key in your JWKS Cerner should use to verify the JWT signature. Placed in the JWT header."
+    },
+    {
+      "label": "Scopes",
+      "value": "system/Patient.read",
+      "field_type": "string",
+      "description": "SMART on FHIR OAuth scopes requested when obtaining an access token, space-separated. Cerner requires scopes on the token request."
+    },
+    {
+      "label": "Resource Type",
+      "value": "Patient",
+      "field_type": "string",
+      "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation."
+    },
+    {
+      "label": "Search Query",
+      "value": "family=smart&given=joe&_count=5",
+      "field_type": "string",
+      "description": "Search parameters as a URL query string, for example family=Smith&birthdate=1970-01-01. Leave empty to search without filters."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, FHIR requests are simulated and no data leaves the runtime, which is useful while wiring up a workflow. Authentication is always performed live so credential problems surface immediately."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Whether to verify the Cerner server's TLS certificate. Leave on outside of local testing against a proxy."
+    }
+  ],
+  "library_deps": {
+    "cerner_fhir": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}
