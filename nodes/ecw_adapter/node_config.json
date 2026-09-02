@@ -1,0 +1,93 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_ECW_ADAPTER",
+  "interval": true,
+  "node_name": "eCW Adapter",
+  "description": "Queries an eCW FHIR server using OAuth 2.0 JWT-bearer authentication with a separate token endpoint and pushes each returned resource downstream as JSON.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 60000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, the runtime invokes the polling script."
+    },
+    {
+      "label": "Base URL",
+      "value": "https://staging-fhir.ecwcloud.com/fhir/r4/FFBJCD/",
+      "field_type": "string",
+      "description": "Root URL of the eCW FHIR endpoint. Resource paths are appended to it, so a trailing slash is expected (one is added if omitted)."
+    },
+    {
+      "label": "Auth URL",
+      "value": "https://staging-oauthserver.ecwcloud.com/",
+      "field_type": "string",
+      "description": "Root URL of the eCW OAuth server. The token endpoint path oauth/oauth2/token is appended to it. This is separate from the FHIR base URL."
+    },
+    {
+      "label": "Client ID",
+      "value": "",
+      "field_type": "string",
+      "description": "The client ID assigned when the app was registered with eCW."
+    },
+    {
+      "label": "Private Key Path",
+      "value": "",
+      "field_type": "file_path",
+      "description": "Absolute path to the PEM-encoded RSA private key whose public key is registered with eCW. Used to sign the RS384 JWT client assertion."
+    },
+    {
+      "label": "Key ID",
+      "value": "",
+      "field_type": "string",
+      "description": "The key identifier (kid) placed in the JWT header. Must match the key ID registered with eCW for your public key."
+    },
+    {
+      "label": "FHIR Version",
+      "value": "R4",
+      "field_type": "list",
+      "description": "FHIR release to target.",
+      "list_options": [
+        "R4",
+        "STU3",
+        "DSTU2"
+      ]
+    },
+    {
+      "label": "Scopes",
+      "value": "system/Patient.read system/Medication.read system/Encounter.read",
+      "field_type": "string",
+      "description": "OAuth scopes to request. Space-separated. eCW requires scopes on the token request (unlike Epic). Defaults to system/Patient.read system/Medication.read system/Encounter.read if left empty."
+    },
+    {
+      "label": "Resource Type",
+      "value": "Patient",
+      "field_type": "string",
+      "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation."
+    },
+    {
+      "label": "Search Query",
+      "value": "family=Smith&birthdate=1970-01-01",
+      "field_type": "string",
+      "description": "Search parameters as a URL query string, for example family=Smith&birthdate=1970-01-01. Leave empty to search without filters."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, FHIR requests are simulated and no data leaves the runtime. Authentication is always performed live so credential problems surface immediately."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Whether to verify the eCW server's TLS certificate. Leave on outside of local testing."
+    }
+  ],
+  "library_deps": {
+    "ecw_fhir": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}

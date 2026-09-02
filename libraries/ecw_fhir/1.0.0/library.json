@@ -1,0 +1,5 @@
+{
+  "name": "ecw_fhir",
+  "description": "eCW FHIR client. Handles JWT client-credentials authentication with a separate token endpoint and provides search, read, create, parameters and bulk export helpers. Copy the ecw_fhir/ folder into a node and add it to package.path.",
+  "version": "1.0.0"
+}
