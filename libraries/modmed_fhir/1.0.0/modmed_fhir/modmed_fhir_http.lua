@@ -1,0 +1,203 @@
+-- ---------------------------------------------------------------------------
+-- modmed_fhir_http - the request path every FHIR call goes through
+--
+-- Attaches the bearer token and the x-api-key header, builds the resource URL,
+-- sends the request, and turns whatever ModMed returns into one predictable
+-- pair:
+--
+--    Result        - the parsed resource or Bundle
+--    nil, Err      - Err is { code=, message= } plus optional context
+--
+-- ModMed returns OperationOutcome resources for business-level errors, which
+-- can arrive with a 200 status code. A successful create returns 201 with an
+-- empty body.
+-- ---------------------------------------------------------------------------
+
+local Auth = require 'modmed_fhir_auth'
+
+local M = {}
+
+-- Verbs whose parameters belong in the query string. Everything else sends a
+-- JSON body.
+local QUERY_VERBS = {
+   get     = true,
+   head    = true,
+   delete  = true,
+   options = true,
+}
+
+-- True when a parsed body is an OperationOutcome.
+local function isOperationOutcome(Parsed)
+   if type(Parsed) ~= 'table' then return false end
+   if Parsed.resourceType == 'OperationOutcome' then return true end
+   if type(Parsed.OperationOutcome) == 'table' and Parsed.OperationOutcome.issue then
+      return true
+   end
+   return false
+end
+
+-- Collapse an OperationOutcome's issues into one readable sentence.
+local function outcomeText(Outcome)
+   local Issues = Outcome.issue
+      or (type(Outcome.OperationOutcome) == 'table' and Outcome.OperationOutcome.issue)
+   if type(Issues) ~= 'table' then return nil end
+
+   local Messages = {}
+   for _, Issue in ipairs(Issues) do
+      local Text = (type(Issue.details) == 'table' and Issue.details.text)
+         or Issue.diagnostics
+         or Issue.code
+      if Text then Messages[#Messages + 1] = tostring(Text) end
+   end
+
+   if #Messages == 0 then return nil end
+   return table.concat(Messages, '; ')
+end
+
+-- Merge caller headers with the ones this module controls. Authorization and
+-- x-api-key are applied last so a caller cannot accidentally replace them.
+local function buildHeaders(CallerHeaders, Token, ApiKey)
+   local Headers = {}
+   for Key, Value in pairs(CallerHeaders or {}) do
+      Headers[Key] = Value
+   end
+   Headers['Accept']        = Headers['Accept'] or 'application/fhir+json'
+   Headers['Authorization'] = 'Bearer ' .. Token
+   Headers['x-api-key']     = ApiKey
+   return Headers
+end
+
+-- Interpret a response with no body. A 2xx here is a successful create/update.
+local function readEmptyBody(Response)
+   if Response.code >= 200 and Response.code < 300 then
+      local Location = Response.headers
+         and (Response.headers.Location or Response.headers.location)
+      return {
+         created  = true,
+         code     = Response.code,
+         location = Location,
+      }
+   end
+
+   return nil, {
+      code    = 'HTTP_' .. tostring(Response.code),
+      message = 'ModMed returned HTTP ' .. tostring(Response.code) .. ' with an empty body',
+   }
+end
+
+-- Parse a response body and classify it as success or failure.
+local function readBody(Response)
+   local Ok, Parsed = pcall(linkiir.json.parse, Response.body)
+   if not Ok then
+      return nil, {
+         code      = 'PARSE_ERROR',
+         message   = 'ModMed response was not valid JSON',
+         http_code = Response.code,
+         body      = Response.body,
+      }
+   end
+
+   if isOperationOutcome(Parsed) then
+      return nil, {
+         code      = 'FHIR_OPERATION_OUTCOME',
+         message   = outcomeText(Parsed) or 'ModMed returned an OperationOutcome',
+         http_code = Response.code,
+         outcome   = Parsed,
+      }
+   end
+
+   if Response.code < 200 or Response.code >= 300 then
+      return nil, {
+         code      = 'HTTP_' .. tostring(Response.code),
+         message   = 'ModMed returned HTTP ' .. tostring(Response.code),
+         http_code = Response.code,
+         body      = Parsed,
+      }
+   end
+
+   return Parsed
+end
+
+-- Send one FHIR request with automatic authentication and 401 retry.
+--
+--   T.method     - HTTP verb, defaults to 'get'
+--   T.api        - path below /fhir/v2/, e.g. 'Patient' or 'Patient/123'
+--   T.parameters - query table for GET-like verbs, JSON body for the rest
+--   T.headers    - extra headers
+--   T.live       - overrides the client's live flag for this call
+function M.request(Client, T)
+   local Token, AuthErr = Auth.ensure(Client)
+   if not Token then return nil, AuthErr end
+
+   local Method = tostring(T.method or 'get'):lower()
+   local SendRequest = linkiir.link.web[Method]
+   if not SendRequest then
+      error("modmed_fhir_http.request: unsupported HTTP method '" .. Method .. "'")
+   end
+
+   local Headers = buildHeaders(T.headers, Token, Client.api_key)
+
+   -- A per-call live flag wins over the client's; both default to true.
+   local Live = T.live
+   if Live == nil then Live = Client.live end
+   if Live == nil then Live = true end
+
+   local Request = {
+      url       = Client.base_url .. 'fhir/v2/' .. tostring(T.api),
+      headers   = Headers,
+      timeout   = Client.timeout,
+      verifyTls = Client.verify_tls,
+      live      = Live,
+   }
+
+   if QUERY_VERBS[Method] then
+      Request.params = T.parameters
+   elseif T.parameters ~= nil then
+      Request.body = linkiir.json.serialize(T.parameters)
+      Headers['Content-Type'] = 'application/fhir+json'
+   end
+
+   linkiir.log.debug('modmed_fhir ' .. Method:upper() .. ' ' .. Request.url)
+
+   local Response, WebErr = SendRequest(Request)
+   if not Response then
+      return nil, WebErr or {
+         code    = 'REQUEST_FAILED',
+         message = Method:upper() .. ' ' .. Request.url .. ' failed',
+      }
+   end
+
+   -- With live = false nothing was sent, so there is no body to interpret.
+   if Response.simulated then
+      return { simulated = true, code = 0 }
+   end
+
+   -- 401: token expired, try refreshing and retry once.
+   if Response.code == 401 then
+      local NewToken, RefreshErr = Auth.refresh(Client)
+      if not NewToken then return nil, RefreshErr end
+
+      Headers['Authorization'] = 'Bearer ' .. NewToken
+      Request.headers = Headers
+
+      Response, WebErr = SendRequest(Request)
+      if not Response then
+         return nil, WebErr or {
+            code    = 'REQUEST_FAILED',
+            message = Method:upper() .. ' ' .. Request.url .. ' failed after token refresh',
+         }
+      end
+
+      if Response.simulated then
+         return { simulated = true, code = 0 }
+      end
+   end
+
+   if Response.body == nil or Response.body == '' then
+      return readEmptyBody(Response)
+   end
+
+   return readBody(Response)
+end
+
+return M

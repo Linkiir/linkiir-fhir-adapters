@@ -1,0 +1,70 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_MODMED_ADAPTER",
+  "interval": true,
+  "node_name": "ModMed Adapter",
+  "description": "Queries a ModMed FHIR server using password/refresh-token authentication with an API key and pushes each returned resource downstream as JSON.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 60000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, the runtime invokes the polling script."
+    },
+    {
+      "label": "Base URL",
+      "value": "",
+      "field_type": "string",
+      "description": "Root URL of the ModMed FHIR endpoint. The token path (ws/oauth2/grant) and FHIR path (fhir/v2/) are appended to it, so a trailing slash is expected (one is added if omitted)."
+    },
+    {
+      "label": "Username",
+      "value": "",
+      "field_type": "string",
+      "description": "ModMed account username used for the initial password grant."
+    },
+    {
+      "label": "Password",
+      "value": "",
+      "field_type": "password",
+      "description": "ModMed account password used for the initial password grant."
+    },
+    {
+      "label": "API Key",
+      "value": "",
+      "field_type": "password",
+      "description": "The x-api-key value sent on every request, including the token exchange."
+    },
+    {
+      "label": "Resource Type",
+      "value": "Patient",
+      "field_type": "string",
+      "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation."
+    },
+    {
+      "label": "Search Query",
+      "value": "_count=20",
+      "field_type": "string",
+      "description": "Search parameters as a URL query string, for example _count=20&family=Smith. Leave empty to search without filters."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, FHIR requests are simulated and no data leaves the runtime. Authentication is always performed live so credential problems surface immediately."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Whether to verify the ModMed server's TLS certificate. Leave on outside of local testing against a proxy."
+    }
+  ],
+  "library_deps": {
+    "modmed_fhir": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}
