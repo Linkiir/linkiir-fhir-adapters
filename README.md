@@ -165,7 +165,7 @@ Two fields appear on most adapters:
 | **Adapters** | Versioned by the `version` field on each adapter. A change that does not move the version forward is rejected, so one version always means one specific set of files. |
 | **Libraries** | Immutable. A published version is never edited; a fix ships as a new version. Nodes pinned to an older version are undisturbed by an update. |
 
-Grid shows you the incoming commit and diff before applying an update. See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+Grid shows you the incoming commit and diff before applying an update. Release notes for every Linkiir catalog adapter and library are published at [help.linkiir.com](https://help.linkiir.com/docs/catalogs/).
 
 ## Repository layout
 
@@ -205,5 +205,5 @@ For a question about a specific adapter, quote its node type id.
 
 Copyright © Linkiir Inc. All rights reserved.
 
-This source is published so Linkiir Grid customers can read, audit and run it. It is **not** open source. See [LICENSE](LICENSE) for the terms that apply.
+This source is published so Linkiir Grid customers can read, audit and run it. It is **not** open source, and no open-source licence is granted. Use of this content is governed by your agreement with Linkiir Inc covering Linkiir Grid. For licensing enquiries, contact Linkiir.
 
