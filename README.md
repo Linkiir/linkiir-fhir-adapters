@@ -8,8 +8,8 @@ A **catalog** is a package of adapter content that one Linkiir Grid publishes an
 |---|---|
 | **Catalog id** | `lkfhir` |
 | **Publisher** | Linkiir Inc |
-| **Adapters** | 7 |
-| **Libraries** | 7 |
+| **Adapters** | 8 |
+| **Libraries** | 8 |
 | **Documentation** | [https://help.linkiir.com/docs/catalogs/](https://help.linkiir.com/docs/catalogs/) |
 
 ---
@@ -42,6 +42,7 @@ Subscribing requires the **Manage catalogs** permission (Administration tier). F
 | **eCW Adapter** | source | interval | 1.0.0 | `LKFHIR_ECW_ADAPTER` |
 | **EPIC Adapter** | source | interval | 1.0.0 | `LKFHIR_EPIC_ADAPTER` |
 | **FHIR Profiling Tools** | source | inbound request | 1.0.0 | `LKFHIR_FHIR_PROFILING_TOOLS` |
+| **HAPI FHIR Adapter** | source | interval | 1.0.0 | `LKFHIR_HAPI_FHIR_ADAPTER` |
 | **FHIR Resource Creator** | transform | on message | 1.0.0 | `LKFHIR_FHIR_RESOURCE_CREATOR` |
 | **ModMed Adapter** | source | interval | 1.0.0 | `LKFHIR_MODMED_ADAPTER` |
 
@@ -91,6 +92,14 @@ Queries a ModMed FHIR server using password/refresh-token authentication with an
 
 Credentials required: **Password**, **API Key**. These ship empty — see [Credentials](#credentials).
 
+### HAPI FHIR Adapter
+
+Polls a HAPI FHIR or Smile OmniVera endpoint on an interval and pushes each returned resource downstream as JSON. Supports FHIR R4 and R5, and connects to an open test server, a bearer-token endpoint, a basic-auth server, or an OAuth2 Backend Services deployment.
+
+`LKFHIR_HAPI_FHIR_ADAPTER` · source node · version 1.0.0 · 16 configuration fields · library `hapi_fhir` 1.0.0
+
+Credentials required: depends on the **Authentication** mode — **Client Secret** for OAuth2, **Bearer Token** for bearer, **Password** for basic, none for a public test endpoint. These ship empty — see [Credentials](#credentials).
+
 ## Libraries
 
 Shared Lua modules the adapters above depend on. A node pins the exact version it uses, and published versions are immutable, so several can sit side by side.
@@ -102,6 +111,7 @@ Shared Lua modules the adapters above depend on. A node pins the exact version i
 | `ecw_fhir` | 1.0.0 | eCW Adapter |
 | `epic_fhir` | 1.0.0 | EPIC Adapter |
 | `fhir_profiling` | 1.0.0 | FHIR Profiling Tools |
+| `hapi_fhir` | 1.0.0 | HAPI FHIR Adapter |
 | `fhir_resource` | 1.0.0 | FHIR Resource Creator |
 | `modmed_fhir` | 1.0.0 | ModMed Adapter |
 
@@ -146,6 +156,12 @@ Modules: `fhir_resource.lua`, `fhir_resource_clean.lua`
 ModMed FHIR client. Handles password and refresh-token authentication with an API key and provides search, read and create helpers. Copy the modmed_fhir/ folder into a node and add it to package.path.
 
 Modules: `modmed_fhir.lua`, `modmed_fhir_auth.lua`, `modmed_fhir_http.lua`, `modmed_fhir_token.lua`
+
+### `hapi_fhir` 1.0.0
+
+HAPI FHIR and Smile OmniVera client. Takes the FHIR base URL whole, so it reaches the public HAPI test server, a self-hosted hapi-fhir-jpaserver, or a Smile OmniVera deployment without changing code. Supports FHIR R4 and R5, four authentication modes (none, bearer, basic, and OAuth2 client_credentials with SMART token-endpoint discovery), and provides search, searchAll with Bundle paging, read, create, update, delete, transaction and operation helpers plus a CapabilityStatement version check. Write and transaction support is there so the same client serves HL7 v2 to FHIR as well as FHIR to HL7 v2.
+
+Modules: `hapi_fhir.lua`, `hapi_fhir_auth.lua`, `hapi_fhir_http.lua`, `hapi_fhir_token.lua`
 
 ## Credentials
 
