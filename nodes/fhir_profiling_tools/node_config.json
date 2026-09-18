@@ -5,7 +5,7 @@
   "node_type_id": "LKFHIR_FHIR_PROFILING_TOOLS",
   "interval": false,
   "node_name": "FHIR Profiling Tools",
-  "description": "Serves a browser UI listing available FHIR resources and types, and returns JSON templates for any requested resource.",
+  "description": "Serves a browser UI for FHIR profiling. Lists available FHIR resources and types and returns a JSON template for any of them, and authors constrained profiles: it lists the elements of a base resource, compiles a constraint spec into a differential StructureDefinition, and imports an existing one. The generated profile is a differential, not a snapshot or a conformance check - validate it with the FHIR Validator.",
   "config": [
     {
       "label": "Route Path",
@@ -43,8 +43,8 @@
     }
   ],
   "library_deps": {
-    "fhir_profiling": "1.0.0"
+    "fhir_profiling": "1.1.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

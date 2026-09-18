@@ -8,8 +8,8 @@ A **catalog** is a package of adapter content that one Linkiir Grid publishes an
 |---|---|
 | **Catalog id** | `lkfhir` |
 | **Publisher** | Linkiir Inc |
-| **Adapters** | 8 |
-| **Libraries** | 8 |
+| **Adapters** | 9 |
+| **Libraries** | 9 |
 | **Documentation** | [https://help.linkiir.com/docs/catalogs/](https://help.linkiir.com/docs/catalogs/) |
 
 ---
@@ -41,9 +41,10 @@ Subscribing requires the **Manage catalogs** permission (Administration tier). F
 | **Cerner FHIR Adapter** | source | interval | 1.0.0 | `LKFHIR_CERNER_FHIR_ADAPTER` |
 | **eCW Adapter** | source | interval | 1.0.0 | `LKFHIR_ECW_ADAPTER` |
 | **EPIC Adapter** | source | interval | 1.0.0 | `LKFHIR_EPIC_ADAPTER` |
-| **FHIR Profiling Tools** | source | inbound request | 1.0.0 | `LKFHIR_FHIR_PROFILING_TOOLS` |
+| **FHIR Profiling Tools** | source | inbound request | 1.1.0 | `LKFHIR_FHIR_PROFILING_TOOLS` |
 | **HAPI FHIR Adapter** | source | interval | 1.0.0 | `LKFHIR_HAPI_FHIR_ADAPTER` |
-| **FHIR Resource Creator** | transform | on message | 1.0.0 | `LKFHIR_FHIR_RESOURCE_CREATOR` |
+| **FHIR Resource Creator** | transform | on message | 1.1.0 | `LKFHIR_FHIR_RESOURCE_CREATOR` |
+| **FHIR Validator** | transform | on message | 1.0.0 | `LKFHIR_FHIR_VALIDATOR` |
 | **ModMed Adapter** | source | interval | 1.0.0 | `LKFHIR_MODMED_ADAPTER` |
 
 ### Athena Adapter
@@ -74,15 +75,21 @@ Queries an Epic FHIR server using OAuth 2.0 JWT-bearer authentication and pushes
 
 ### FHIR Profiling Tools
 
-Serves a browser UI listing available FHIR resources and types, and returns JSON templates for any requested resource.
+Serves a browser UI for FHIR profiling: lists available FHIR resources and types and returns a JSON template for any of them, and authors constrained profiles. The Profile Designer lists the constrainable elements of a base resource, compiles a constraint spec into a differential `StructureDefinition`, and imports an existing one. The generated profile is a differential, not a snapshot or a conformance check — validate it with the FHIR Validator.
 
-`LKFHIR_FHIR_PROFILING_TOOLS` · source node · version 1.0.0 · 5 configuration fields · library `fhir_profiling` 1.0.0
+`LKFHIR_FHIR_PROFILING_TOOLS` · source node · version 1.1.0 · 5 configuration fields · library `fhir_profiling` 1.1.0
 
 ### FHIR Resource Creator
 
-Maps inbound patient data onto a FHIR R4 Patient template, strips unused null fields, and pushes the clean resource downstream as JSON.
+Maps an inbound JSON message onto a FHIR R4 Patient or Observation resource, strips unused fields, and pushes the clean resource downstream as JSON. The resource type and identifier system are configurable; with no configuration it builds a Patient, unchanged from earlier versions.
 
-`LKFHIR_FHIR_RESOURCE_CREATOR` · transform node · version 1.0.0 · 0 configuration fields · library `fhir_resource` 1.0.0
+`LKFHIR_FHIR_RESOURCE_CREATOR` · transform node · version 1.1.0 · 4 configuration fields · library `fhir_resource` 1.1.0
+
+### FHIR Validator
+
+Validates an inbound FHIR resource against a FHIR server's `$validate` operation and forwards it downstream only when it validates. Returns a strict verdict — valid, invalid, or unknown — and fails closed: anything short of a conclusive pass is not forwarded. Validation is remote; the FHIR server is the authority. Place it before a FHIR destination (Epic, HAPI, and so on) to stop an invalid resource being sent.
+
+`LKFHIR_FHIR_VALIDATOR` · transform node · version 1.0.0 · 9 configuration fields · library `fhir_validate` 1.0.0
 
 ### ModMed Adapter
 
@@ -110,9 +117,10 @@ Shared Lua modules the adapters above depend on. A node pins the exact version i
 | `cerner_fhir` | 1.0.0 | Cerner FHIR Adapter |
 | `ecw_fhir` | 1.0.0 | eCW Adapter |
 | `epic_fhir` | 1.0.0 | EPIC Adapter |
-| `fhir_profiling` | 1.0.0 | FHIR Profiling Tools |
+| `fhir_profiling` | 1.1.0 (1.0.0 also shipped) | FHIR Profiling Tools |
 | `hapi_fhir` | 1.0.0 | HAPI FHIR Adapter |
-| `fhir_resource` | 1.0.0 | FHIR Resource Creator |
+| `fhir_resource` | 1.1.0 (1.0.0 also shipped) | FHIR Resource Creator |
+| `fhir_validate` | 1.0.0 | FHIR Validator |
 | `modmed_fhir` | 1.0.0 | ModMed Adapter |
 
 ### `athena_health` 1.0.0
@@ -139,17 +147,23 @@ Epic FHIR client. Handles SMART backend services authentication (signed JWT clie
 
 Modules: `epic_fhir.lua`, `epic_fhir_auth.lua`, `epic_fhir_http.lua`, `epic_fhir_jwt.lua`, `epic_fhir_token.lua`
 
-### `fhir_profiling` 1.0.0
+### `fhir_profiling` 1.1.0
 
-FHIR resource profiling tool. Loads FHIR specification profiles from a SQLite database, lists available resources and types, and generates JSON templates with null-valued fields for any resource or complex type.
+FHIR resource profiling and profile authoring tool. Loads FHIR R4 specification profiles from a SQLite database, lists available resources and types, and generates JSON templates for any of them. 1.1.0 adds a Profile Designer: it lists the constrainable elements of a base resource, compiles a constraint spec into a differential `StructureDefinition`, and imports an existing one while preserving it whole. The output is a differential, not a snapshot, and is not a conformance check — validate it with the FHIR Validator. Version 1.0.0 remains published for nodes pinned to it.
 
-Modules: `fhir_profiling.lua`, `fhir_profiling_create.lua`, `fhir_profiling_db.lua`, `fhir_profiling_web.lua`
+Modules: `fhir_profiling.lua`, `fhir_profiling_create.lua`, `fhir_profiling_db.lua`, `fhir_profiling_web.lua`, `fhir_profiling_profile.lua`
 
-### `fhir_resource` 1.0.0
+### `fhir_resource` 1.1.0
 
-FHIR Patient resource builder. Parses inbound patient data, maps it onto a FHIR R4 Patient template, strips JSON nulls from unused fields, and returns the clean serialised resource. No network or authentication.
+FHIR R4 resource builder. Maps an inbound JSON message onto a Patient or Observation template, strips unused fields, and returns the clean serialised resource. Array and object shapes are tagged explicitly, so a sparse input can no longer produce a wrong JSON shape. No network or authentication. Version 1.0.0 remains published for nodes pinned to it.
 
 Modules: `fhir_resource.lua`, `fhir_resource_clean.lua`
+
+### `fhir_validate` 1.0.0
+
+Remote FHIR `$validate` client. Validates a resource against a FHIR server's type-level `$validate` operation and returns a strict tri-state verdict — valid, invalid, or unknown. Nothing is validated locally; the server that will store the data is the authority. Fails closed: a timeout, an HTTP error, a malformed response, or a profile the server cannot resolve all yield unknown, never a false valid or invalid. The submitted resource is sent byte-for-byte and never mutated. Designed to be called from an adapter before it sends, so an Epic, Cerner or HAPI adapter can refuse to POST a resource that did not validate.
+
+Modules: `fhir_validate.lua`
 
 ### `modmed_fhir` 1.0.0
 

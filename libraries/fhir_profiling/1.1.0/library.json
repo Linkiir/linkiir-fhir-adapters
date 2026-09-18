@@ -1,0 +1,5 @@
+{
+  "name": "fhir_profiling",
+  "description": "FHIR resource profiling and profile authoring tool. Loads FHIR R4 specification profiles from a SQLite database, lists available resources and types, and generates JSON templates for any resource or complex type. Version 1.1.0 adds a Profile Designer: it lists the constrainable elements of a base resource, compiles a constraint spec into a differential StructureDefinition (tagged for correct JSON shape), and imports an existing StructureDefinition while preserving it whole. The output is a differential, not a snapshot, and is not a conformance check - validate it with the FHIR Validator or a server that supports StructureDefinition/$validate. Copy the fhir_profiling/ folder into a node and add it to package.path.",
+  "version": "1.1.0"
+}

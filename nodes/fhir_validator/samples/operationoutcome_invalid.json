@@ -1,0 +1,87 @@
+{
+    "resourceType": "OperationOutcome",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h1>Operation Outcome</h1><table border=\"0\"><tr><td style=\"font-weight: bold;\">ERROR</td><td>[Patient.name, Line[1] Col[48]]</td><td>The property name must be a JSON Array, not a Primitive property (at Patient)</td></tr><tr><td style=\"font-weight: bold;\">ERROR</td><td>[Patient.name, Line[1] Col[48]]</td><td>The property name must be an Array, not a Primitive property (at Patient.name)</td></tr><tr><td style=\"font-weight: bold;\">WARNING</td><td>[Patient, Line[1] Col[49]]</td><td>Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)</td></tr></table></div>"
+    },
+    "issue": [
+        {
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+                    "valueInteger": 1
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+                    "valueInteger": 48
+                }
+            ],
+            "severity": "error",
+            "code": "processing",
+            "diagnostics": "The property name must be a JSON Array, not a Primitive property (at Patient)",
+            "location": [
+                "Patient.name",
+                "Line[1] Col[48]"
+            ],
+            "expression": [
+                "Patient.name"
+            ]
+        },
+        {
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+                    "valueInteger": 1
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+                    "valueInteger": 48
+                }
+            ],
+            "severity": "error",
+            "code": "processing",
+            "diagnostics": "The property name must be an Array, not a Primitive property (at Patient.name)",
+            "location": [
+                "Patient.name",
+                "Line[1] Col[48]"
+            ],
+            "expression": [
+                "Patient.name"
+            ]
+        },
+        {
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+                    "valueInteger": 1
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+                    "valueInteger": 49
+                },
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+                    "valueString": "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6"
+                }
+            ],
+            "severity": "warning",
+            "code": "processing",
+            "details": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/java-core-messageId",
+                        "code": "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6"
+                    }
+                ]
+            },
+            "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+            "location": [
+                "Patient",
+                "Line[1] Col[49]"
+            ],
+            "expression": [
+                "Patient"
+            ]
+        }
+    ]
+}

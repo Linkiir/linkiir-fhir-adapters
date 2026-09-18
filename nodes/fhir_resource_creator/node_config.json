@@ -5,11 +5,44 @@
   "node_type_id": "LKFHIR_FHIR_RESOURCE_CREATOR",
   "interval": false,
   "node_name": "FHIR Resource Creator",
-  "description": "Maps inbound patient data onto a FHIR R4 Patient template, strips unused null fields, and pushes the clean resource downstream as JSON.",
-  "config": [],
+  "description": "Maps an inbound JSON message onto a FHIR R4 Patient or Observation resource, strips unused fields, and pushes the clean resource downstream as JSON. The resource type and identifier system are configurable; with no configuration it builds a Patient, unchanged from earlier versions.",
+  "config": [
+    {
+      "label": "Resource Type",
+      "value": "Patient",
+      "field_type": "list",
+      "description": "Which FHIR resource to build from the inbound fields.",
+      "list_options": [
+        "Patient",
+        "Observation"
+      ]
+    },
+    {
+      "label": "Identifier System",
+      "value": "http://example.org/mrn",
+      "field_type": "string",
+      "description": "The identifier system to stamp on a Patient's identifier when the input carries an identifier_value but no identifier_system of its own. An identifier_system in the input overrides this. Not used for Observation."
+    },
+    {
+      "label": "On Error",
+      "value": "Stop",
+      "field_type": "list",
+      "description": "What to do when the input cannot be mapped. 'Stop' logs the error and forwards nothing - a partial or malformed resource is never sent. 'Push to error route' forwards the original input to the Error Topic instead.",
+      "list_options": [
+        "Stop",
+        "Push to error route"
+      ]
+    },
+    {
+      "label": "Error Topic",
+      "value": "",
+      "field_type": "string",
+      "description": "Topic to publish the original input to when On Error is 'Push to error route'. Leave empty when On Error is 'Stop'."
+    }
+  ],
   "library_deps": {
-    "fhir_resource": "1.0.0"
+    "fhir_resource": "1.1.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

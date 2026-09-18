@@ -1,0 +1,12 @@
+{
+  "status": "final",
+  "code": "29463-7",
+  "codeSystem": "http://loinc.org",
+  "codeDisplay": "Body Weight",
+  "codeText": "Body Weight",
+  "subjectReference": "Patient/example",
+  "effectiveDateTime": "2026-09-18T10:30:00Z",
+  "value": 72.5,
+  "unit": "kg",
+  "unitCode": "kg"
+}

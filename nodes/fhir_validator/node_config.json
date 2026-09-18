@@ -1,0 +1,78 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "transform",
+  "node_type_id": "LKFHIR_FHIR_VALIDATOR",
+  "interval": false,
+  "node_name": "FHIR Validator",
+  "description": "Validates an inbound FHIR resource against a FHIR server's $validate operation and forwards it downstream only when it validates. Returns a strict verdict - valid, invalid, or unknown - and fails closed: anything short of a conclusive pass is not forwarded. Validation is remote; the FHIR server is the authority. Place it before a FHIR destination (Epic, HAPI, and so on) to stop an invalid resource being sent.",
+  "config": [
+    {
+      "label": "FHIR Base URL",
+      "value": "https://hapi.fhir.org/baseR4",
+      "field_type": "string",
+      "description": "The FHIR base URL whose $validate operation to call, with no trailing resource path. The public HAPI test server is https://hapi.fhir.org/baseR4. For production, use a PHI-approved endpoint - the public server must not receive real patient data."
+    },
+    {
+      "label": "Profile Canonical",
+      "value": "",
+      "field_type": "string",
+      "description": "Optional. A profile canonical URL to validate against, for example a US Core profile. Leave empty to validate against the resource's base definition. The profile must actually be installed on the server; if the server cannot resolve it the result is 'unknown', not a silent fall back to base validation."
+    },
+    {
+      "label": "On Invalid",
+      "value": "Stop",
+      "field_type": "list",
+      "description": "What to do when the server reports the resource is invalid. 'Stop' logs the issues and does not forward. 'Push to error route' forwards to the Error Topic instead of downstream.",
+      "list_options": [
+        "Stop",
+        "Push to error route"
+      ]
+    },
+    {
+      "label": "On Unknown",
+      "value": "Stop",
+      "field_type": "list",
+      "description": "What to do when no verdict could be obtained - a timeout, an HTTP error, a malformed response, or an unresolvable profile. Fails closed: 'Stop' does not forward. 'Push to error route' forwards to the Error Topic. Never forwards downstream as if valid.",
+      "list_options": [
+        "Stop",
+        "Push to error route"
+      ]
+    },
+    {
+      "label": "Error Topic",
+      "value": "",
+      "field_type": "string",
+      "description": "Topic to publish to when On Invalid or On Unknown is 'Push to error route'. Leave empty when both are 'Stop'."
+    },
+    {
+      "label": "Block Warnings",
+      "value": false,
+      "field_type": "bool",
+      "description": "When on, a resource that is valid but has warning-level issues is treated like an invalid result and not forwarded. Off (the default) forwards a resource that has only warnings, which is how FHIR defines validity."
+    },
+    {
+      "label": "Timeout",
+      "value": 20,
+      "field_type": "number",
+      "description": "How long to wait for the validation server, in seconds."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, no validation request is sent. Because a resource cannot be confirmed valid without asking the server, Live Mode off yields 'unknown' and nothing is forwarded - it is for wiring up the node, not for passing traffic through untested."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Verify the validation server's TLS certificate. Leave on. Turn it off only for a local test server with a self-signed certificate."
+    }
+  ],
+  "library_deps": {
+    "fhir_validate": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}

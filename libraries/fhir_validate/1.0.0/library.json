@@ -1,0 +1,5 @@
+{
+  "name": "fhir_validate",
+  "description": "Remote FHIR $validate client. Validates a FHIR resource against a FHIR server's type-level $validate operation and returns a strict tri-state verdict: valid, invalid, or unknown. Nothing is validated locally - the server that will store the data is the authority. Fails closed: a timeout, an HTTP 4xx/5xx, a malformed response, or a profile the server cannot resolve all yield unknown, never a false valid or invalid. HTTP 200 is not treated as the verdict, since $validate returns its result in an OperationOutcome. The submitted resource is sent byte-for-byte and never mutated. Designed to be called from an adapter before it sends, so an Epic, Cerner or HAPI adapter can refuse to POST a resource that did not validate. Copy the fhir_validate/ folder into a node and add it to package.path.",
+  "version": "1.0.0"
+}
