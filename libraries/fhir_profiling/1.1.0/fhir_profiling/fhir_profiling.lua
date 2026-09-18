@@ -262,7 +262,10 @@ function M.fromNodeConfig()
 
    local SpecPath = Config['Specifications Path']
    if not SpecPath or SpecPath == '' then
-      SpecPath = linkiir.sys.nodeDir() .. '/Specifications/'
+      -- The specification data (v<version>/ plus fhir_profiles.db) ships inside
+      -- the node under test_specs/, so that is the default. An operator can
+      -- still point Specifications Path at an external directory to override it.
+      SpecPath = linkiir.sys.nodeDir() .. '/test_specs/'
    end
 
    return M.new{
