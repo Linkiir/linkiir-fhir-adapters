@@ -1,0 +1,5 @@
+{
+  "name": "hapi_fhir",
+  "description": "HAPI FHIR and Smile OmniVera client. Takes the FHIR base URL whole, so it reaches the public HAPI test server, a self-hosted hapi-fhir-jpaserver, or a Smile OmniVera deployment without changing code. Supports FHIR R4 and R5, four authentication modes (none, bearer, basic, and OAuth2 client_credentials with SMART token-endpoint discovery), and provides search, searchAll with Bundle paging, read, create, update, delete, transaction and operation helpers plus a CapabilityStatement version check. Write and transaction support is there so the same client serves HL7 v2 to FHIR as well as FHIR to HL7 v2. Copy the hapi_fhir/ folder into a node and add it to package.path.",
+  "version": "1.0.0"
+}

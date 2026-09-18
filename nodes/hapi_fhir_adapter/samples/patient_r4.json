@@ -1,0 +1,33 @@
+{
+  "resourceType": "Patient",
+  "id": "1002",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2026-09-15T14:12:28.990-04:00",
+    "source": "#fQUVhXRLsEzqrCWz"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">Sarah <b>THOMPSON </b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Identifier</td><td>ARC-DEMO-THOMPSON-DOC-001</td></tr><tr><td>Date of birth</td><td><span>12 April 1962</span></td></tr></tbody></table></div>"
+  },
+  "identifier": [
+    {
+      "system": "https://arca.demo/mrn",
+      "value": "ARC-DEMO-THOMPSON-DOC-001"
+    },
+    {
+      "system": "https://arca.demo/seed-token",
+      "value": "36394e58-2f49-458e-af77-2f7ab9cd4147"
+    }
+  ],
+  "name": [
+    {
+      "family": "Thompson",
+      "given": [
+        "Sarah"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1962-04-12"
+}

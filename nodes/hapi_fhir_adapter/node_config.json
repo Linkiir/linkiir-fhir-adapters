@@ -1,0 +1,122 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKFHIR_HAPI_FHIR_ADAPTER",
+  "interval": true,
+  "node_name": "HAPI FHIR Adapter",
+  "description": "Polls a HAPI FHIR or Smile OmniVera endpoint on an interval and pushes each returned resource downstream as JSON. Supports FHIR R4 and R5, and connects to an open test server, a bearer-token endpoint, a basic-auth server, or an OAuth2 Backend Services deployment.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 60000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, to poll the FHIR server. 60000 is one minute."
+    },
+    {
+      "label": "FHIR Base URL",
+      "value": "https://hapi.fhir.org/baseR4",
+      "field_type": "string",
+      "description": "The FHIR base URL, with no trailing resource path. The public HAPI test server is https://hapi.fhir.org/baseR4 (or /baseR5). For Smile OmniVera, use the endpoint Smile supplied for your deployment and tenant."
+    },
+    {
+      "label": "FHIR Version",
+      "value": "FHIR R4 (4.0.1)",
+      "field_type": "list",
+      "description": "Which FHIR release this endpoint serves. Sent as the fhirVersion parameter on the Accept header. Advisory only: a server that hosts one release ignores it, so the base URL still has to point at the right release.",
+      "list_options": [
+        "FHIR R4 (4.0.1)",
+        "FHIR R5 (5.0.0)"
+      ]
+    },
+    {
+      "label": "Authentication",
+      "value": "None (public test endpoint)",
+      "field_type": "list",
+      "description": "How to authenticate. 'None' sends no Authorization header and suits the public HAPI test server or a local hapi-fhir-jpaserver. 'OAuth2 Backend Services' is the unattended flow a production Smile OmniVera endpoint normally expects. Only the fields for the mode you choose are used.",
+      "list_options": [
+        "None (public test endpoint)",
+        "OAuth2 Backend Services",
+        "Bearer Token",
+        "Basic"
+      ]
+    },
+    {
+      "label": "Token URL",
+      "value": "",
+      "field_type": "string",
+      "description": "OAuth2 only. The token endpoint to exchange credentials at. Leave empty to discover it from the FHIR base URL's .well-known/smart-configuration document; set it explicitly when the server does not publish one or its authorization server sits elsewhere."
+    },
+    {
+      "label": "Client ID",
+      "value": "",
+      "field_type": "string",
+      "description": "OAuth2 only. The client id issued for this integration."
+    },
+    {
+      "label": "Client Secret",
+      "value": "",
+      "field_type": "password",
+      "description": "OAuth2 only. The client secret issued for this integration. Stored encrypted and decrypted only when the script reads it."
+    },
+    {
+      "label": "Scope",
+      "value": "",
+      "field_type": "string",
+      "description": "OAuth2 only. Space-separated scopes to request, for example 'system/*.read' for read-only access or 'system/Patient.read system/Observation.read' to narrow it. Leave empty to let the server apply its default."
+    },
+    {
+      "label": "Bearer Token",
+      "value": "",
+      "field_type": "password",
+      "description": "Bearer Token mode only. A token issued outside this adapter. Stored encrypted. Note the adapter cannot refresh it, so a short-lived token will start failing when it expires - use OAuth2 for an unattended feed."
+    },
+    {
+      "label": "Username",
+      "value": "",
+      "field_type": "string",
+      "description": "Basic mode only. The username to send in the Authorization header."
+    },
+    {
+      "label": "Password",
+      "value": "",
+      "field_type": "password",
+      "description": "Basic mode only. The password to send in the Authorization header. Stored encrypted."
+    },
+    {
+      "label": "Resource Type",
+      "value": "Patient",
+      "field_type": "string",
+      "description": "The FHIR resource type to search, for example Patient, Observation or Encounter."
+    },
+    {
+      "label": "Search Query",
+      "value": "_count=20",
+      "field_type": "string",
+      "description": "FHIR search parameters as a query string, for example 'family=Smith&birthdate=1970-01-01'. Use _count to set the page size and _lastUpdated to fetch only recent changes. Leave empty to return everything the server offers on the first page."
+    },
+    {
+      "label": "Max Pages",
+      "value": 1,
+      "field_type": "number",
+      "description": "How many pages of search results to follow. A FHIR server returns one page plus a 'next' link, so 1 fetches only the first page. Raise it to walk further, or set 0 for no limit - be careful, an unfiltered search can be very large."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, requests are prepared and logged but never sent. Use it to confirm the URL and credentials are configured before touching a real server."
+    },
+    {
+      "label": "Verify TLS",
+      "value": true,
+      "field_type": "bool",
+      "description": "Verify the server's TLS certificate. Leave on. Turn it off only for a local test server with a self-signed certificate."
+    }
+  ],
+  "library_deps": {
+    "hapi_fhir": "1.0.0"
+  },
+  "config_version": 1,
+  "version": "1.0.0"
+}

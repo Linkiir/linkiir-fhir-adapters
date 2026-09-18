@@ -1,0 +1,28 @@
+{
+  "resourceType": "CapabilityStatement",
+  "id": "f22a5976-7362-46d8-9517-c8645178aaf1",
+  "status": "active",
+  "date": "2026-09-17T20:15:25.395-04:00",
+  "publisher": "Not provided",
+  "kind": "instance",
+  "fhirVersion": "4.0.1",
+  "format": [
+    "application/fhir+xml",
+    "xml",
+    "application/fhir+json",
+    "json",
+    "application/x-turtle",
+    "ttl",
+    "html/json",
+    "html/xml",
+    "html/turtle"
+  ],
+  "software": {
+    "name": "HAPI FHIR Server",
+    "version": "8.13.9-SNAPSHOT/24f65e12fb/2026-09-17"
+  },
+  "implementation": {
+    "description": "HAPI FHIR Test/Demo Server R4 Endpoint",
+    "url": "https://hapi.fhir.org/baseR4"
+  }
+}
