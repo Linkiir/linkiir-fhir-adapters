@@ -24,10 +24,10 @@
       "label": "FHIR Version",
       "value": "4.0.1",
       "field_type": "list",
-      "description": "The FHIR specification version to load profiles for.",
+      "description": "The FHIR specification version to load profiles for. The Profile Designer can switch between the shipped versions at request time; this sets the default.",
       "list_options": [
         "4.0.1",
-        "4.0.0"
+        "5.0.0"
       ]
     },
     {
@@ -40,7 +40,7 @@
       "label": "Specifications Path",
       "value": "",
       "field_type": "string",
-      "description": "Absolute path to the Specifications directory containing FHIR profile JSON files and the SQLite database. If empty, defaults to the Specifications/ folder inside the node directory."
+      "description": "Absolute path to a fhir-definitions directory holding one folder per release (R4_4.0.1/, R5_5.0.0/) with resources.json and types.json. If empty, defaults to the fhir-definitions/ folder shipped inside the node."
     }
   ],
   "library_deps": {
