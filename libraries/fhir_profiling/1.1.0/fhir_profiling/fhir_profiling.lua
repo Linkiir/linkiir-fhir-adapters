@@ -179,6 +179,76 @@ function MT:createResource(ResourceName)
    return createResource(self, ResourceName)
 end
 
+-- The top-level fields of a resource: the elements one level below the root,
+-- each { name, required }. Required is min > 0. Used by the Template Builder to
+-- pre-check and lock required fields and offer the optional ones.
+function MT:topLevelFields(ResourceName)
+   self:ensureLoaded()
+   local Elements, Err = Profile.baseElements(self, ResourceName)
+   if not Elements then return nil, Err end
+   local Prefix = ResourceName .. '.'
+   local Seen, Out = {}, {}
+   for _, El in ipairs(Elements) do
+      local Path = El.path or ''
+      if Path:sub(1, #Prefix) == Prefix then
+         local Rest = Path:sub(#Prefix + 1)
+         if not Rest:find('%.') and not Seen[Rest] then
+            Seen[Rest] = true
+            Out[#Out + 1] = {
+               name     = Rest,
+               required = (tonumber(El.min) or 0) > 0,
+               max      = El.max,
+               short    = El.short,
+            }
+         end
+      end
+   end
+   return Out
+end
+
+-- A FHIR JSON *template* for a resource: the full resource skeleton with every
+-- leaf set to null, pruned to resourceType + the required fields + whichever
+-- optional fields the caller selected. This is the artifact the Template Builder
+-- copies and the Resource Creator fills - a real FHIR document shape, not an
+-- invented format.
+--
+--   ResourceName   - e.g. "Patient"
+--   SelectedFields - a set { fieldName = true } of optional top-level fields to
+--                    include, or nil to include every field. Required fields are
+--                    always kept regardless.
+--
+-- Returns a Lua table (tagged for correct JSON shape), or nil plus a message.
+function MT:templateFor(ResourceName, SelectedFields)
+   self:ensureLoaded()
+   local Full = createResource(self, ResourceName)
+   if not Full then
+      return nil, 'could not build a template for ' .. tostring(ResourceName)
+   end
+   local Fields, FErr = self:topLevelFields(ResourceName)
+   if not Fields then return nil, FErr end
+
+   -- Which top-level keys to keep: required always, optional only if selected
+   -- (or all optional when SelectedFields is nil).
+   local Keep = { resourceType = true }
+   for _, F in ipairs(Fields) do
+      if F.required then
+         Keep[F.name] = true
+      elseif SelectedFields == nil or SelectedFields[F.name] then
+         Keep[F.name] = true
+      end
+   end
+
+   for Key in pairs(Full) do
+      if not Keep[Key] then
+         Full[Key] = nil
+      end
+   end
+   -- createResource builds the body without a resourceType (the root element is
+   -- the resource itself); stamp it so the template is a complete FHIR document.
+   Full.resourceType = ResourceName
+   return Full
+end
+
 -- 1.1.0: profile authoring. The elements a base resource offers to constrain.
 function MT:baseElements(BaseResource)
    return Profile.baseElements(self, BaseResource)
