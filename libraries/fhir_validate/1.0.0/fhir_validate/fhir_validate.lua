@@ -38,7 +38,10 @@
 
 local M = {}
 
-local DEFAULT_TIMEOUT = 20
+-- Internal default; not a node setting. A catalog validator does not expose a
+-- timeout knob - 15s is enough for a synchronous $validate and short enough to
+-- fail closed rather than hang a workflow.
+local DEFAULT_TIMEOUT = 15
 
 -- FHIR issue codes that mean "the validator could not do the job", as opposed
 -- to "the resource is wrong". A server reports these when the requested profile
@@ -157,24 +160,57 @@ function Client:check(FhirJson, Opts)
    return classify(Response)
 end
 
+-- The most output any one summary line will list, so a server that returns
+-- dozens of issues does not produce an unreadable log line.
+local MAX_SUMMARIZED = 5
+
 -- Collapse an OperationOutcome's issues into one readable line, for logging a
 -- verdict without dumping the whole resource. Never includes the submitted
 -- resource, so it is safe to log.
+--
+-- Only the issues that matter to a verdict are listed: fatal, error, and
+-- warning. FHIR servers (HAPI in particular) also emit 'information' issues
+-- that are validator bookkeeping - line/column pointers, message ids, "Unknown
+-- extension http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-*" -
+-- which are noise to an operator and never change whether a resource is valid.
+-- Those are counted, not printed. A resource that passes with only that
+-- bookkeeping therefore logs a clean "no blocking issues" rather than a wall of
+-- "Unknown extension" lines.
 function M.summarize(Outcome)
    if type(Outcome) ~= 'table' or type(Outcome.issue) ~= 'table' then
       return 'no issues reported'
    end
-   local Parts = {}
+
+   local Notable, InfoCount = {}, 0
    for _, Issue in ipairs(Outcome.issue) do
-      local Text = (type(Issue.details) == 'table' and Issue.details.text)
-         or Issue.diagnostics
-         or Issue.code
-      if Text then
-         Parts[#Parts + 1] = tostring(Issue.severity or '?') .. ': ' .. tostring(Text)
+      local Severity = tostring(Issue.severity or 'information')
+      if Severity == 'fatal' or Severity == 'error' or Severity == 'warning' then
+         local Text = (type(Issue.details) == 'table' and Issue.details.text)
+            or Issue.diagnostics or Issue.code
+         if Text then
+            Notable[#Notable + 1] = Severity .. ': ' .. tostring(Text)
+         end
+      else
+         InfoCount = InfoCount + 1
       end
    end
-   if #Parts == 0 then return 'no issue detail' end
-   return table.concat(Parts, ' | ')
+
+   if #Notable == 0 then
+      if InfoCount > 0 then
+         return 'no blocking issues (' .. InfoCount .. ' informational note'
+            .. (InfoCount == 1 and '' or 's') .. ')'
+      end
+      return 'no issues'
+   end
+
+   local Shown = Notable
+   local Suffix = ''
+   if #Notable > MAX_SUMMARIZED then
+      Shown = {}
+      for i = 1, MAX_SUMMARIZED do Shown[i] = Notable[i] end
+      Suffix = ' | (+' .. (#Notable - MAX_SUMMARIZED) .. ' more)'
+   end
+   return table.concat(Shown, ' | ') .. Suffix
 end
 
 -- Build a client.
@@ -211,17 +247,54 @@ function M.new(T)
 end
 
 -- Build a client from the current node's own configuration fields.
+--
+-- The node exposes only two settings - FHIR Base URL and an optional Profile
+-- Canonical. TLS verification is always on and the timeout is the internal
+-- default; neither is a knob a catalog node should offer. The resource type is
+-- taken from the resource itself (see check), so there is no Resource Type
+-- setting and no allow-list by default - the same node validates Patient,
+-- Observation, Encounter, and so on.
 function M.fromNodeConfig()
    local Config = linkiir.config.node()
-   local Allowed = { 'Patient', 'Observation', 'Encounter', 'StructureDefinition' }
    local Instance = M.new{
-      BaseUrl      = Config['FHIR Base URL'],
-      Profile      = Config['Profile Canonical'],
-      AllowedTypes = Allowed,
-      VerifyTls    = Config['Verify TLS'],
-      Live         = Config['Live Mode'],
+      BaseUrl = Config['FHIR Server URL'] or Config['FHIR Base URL'],
+      Profile = Config['FHIR Profile'] or Config['Profile Canonical'],
    }
    return Instance, Config
+end
+
+-- ---------------------------------------------------------------------------
+-- Simple one-call entry for the FHIR Validator node.
+--
+--   Opts = { data = <FHIR JSON string>, baseUrl = <FHIR base URL>,
+--            profile = <optional profile canonical> }
+--
+-- Returns a result table:
+--   { valid = <boolean>, status = 'valid'|'invalid'|'unknown',
+--     summary = <one-line issue summary, safe to log - no submitted PHI> }
+--
+-- valid is true ONLY on a conclusive pass (an OperationOutcome with no fatal
+-- or error issues). Both 'invalid' and 'unknown' return valid=false, so the
+-- caller stops on anything that is not a clean pass - a timeout, an HTTP
+-- failure, a malformed response, or an unresolved profile all stop, never
+-- forward. The summary is built from issue severity/code/details only and never
+-- includes the submitted resource, so it is safe to surface in an error.
+-- ---------------------------------------------------------------------------
+function M.validate(Opts)
+   Opts = Opts or {}
+   local Client = M.new{ BaseUrl = Opts.baseUrl, Profile = Opts.profile }
+   local Status, Outcome, Reason = Client:check(Opts.data, { profile = Opts.profile })
+
+   local Summary
+   if Status == 'valid' then
+      Summary = M.summarize(Outcome)
+   elseif Status == 'invalid' then
+      Summary = M.summarize(Outcome)
+   else
+      Summary = Reason or 'no validation verdict was obtained'
+   end
+
+   return { valid = (Status == 'valid'), status = Status, summary = Summary }
 end
 
 M.Client = Client

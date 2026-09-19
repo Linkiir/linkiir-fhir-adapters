@@ -1,1 +1,42 @@
-{"resourceType":"Patient","name":[{"family":"Smith","given":["Jane"]}]}
+{
+    "resourceType": "Patient",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Jane Smith, female, DOB 1980-05-15, MRN DEMO-12345</div>"
+    },
+    "identifier": [
+        {
+            "system": "http://hospital.example.org/mrn",
+            "value": "DEMO-12345"
+        }
+    ],
+    "active": false,
+    "name": [
+        {
+            "family": "Smith",
+            "given": ["Jane"]
+        }
+    ],
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "+1-555-0100",
+            "use": "home"
+        },
+        {
+            "system": "email",
+            "value": "jane.smith@example.org"
+        }
+    ],
+    "gender": "female",
+    "birthDate": "1980-05-15",
+    "address": [
+        {
+            "line": ["123 Main St"],
+            "city": "Springfield",
+            "state": "IL",
+            "postalCode": "62701",
+            "country": "US"
+        }
+    ]
+}

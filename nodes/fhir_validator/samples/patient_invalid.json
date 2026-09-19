@@ -1,0 +1,23 @@
+{
+    "resourceType": "Patient",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Invalid demo patient (contains an unrecognized field)</div>"
+    },
+    "identifier": [
+        {
+            "system": "http://hospital.example.org/mrn",
+            "value": "BAD-0001"
+        }
+    ],
+    "active": false,
+    "name": [
+        {
+            "family": "Doe",
+            "given": ["John"]
+        }
+    ],
+    "gender": "male",
+    "birthDate": "1980-05-15",
+    "bogusField": "this element is not part of the FHIR Patient resource"
+}

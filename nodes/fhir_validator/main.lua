@@ -1,86 +1,48 @@
 -- ---------------------------------------------------------------------------
 -- FHIR Validator - Transform Custom
 --
--- Receives a FHIR resource as JSON, validates it against a FHIR server's
--- $validate operation, and forwards the resource downstream unchanged only when
--- it validates. Anything short of a conclusive pass is not forwarded: the node
--- fails closed.
+-- Validates an inbound FHIR resource against a FHIR server's $validate
+-- operation and forwards it unchanged only on a clean pass. Anything else - an
+-- invalid resource, a timeout, an HTTP failure, a malformed response, or a
+-- profile the server cannot resolve - stops the node with an error, so an
+-- unvalidated resource never reaches the next node.
 --
--- Put it between a resource producer (FHIR Resource Creator, an HL7-to-FHIR
--- mapping) and a FHIR destination (Epic, HAPI, OmniVera). It stops an invalid
--- resource reaching the server.
+-- Receive JSON -> Validate -> Pass or Stop.
 --
--- What to change where:
---   which server validates, the profile, the routing  ->  node config
---   how $validate is called and the verdict decided    ->  fhir_validate library
+-- All the HTTP handling and OperationOutcome interpretation live in the
+-- fhir_validate library. The node reads two settings and decides pass/stop.
 -- ---------------------------------------------------------------------------
 package.path = linkiir.sys.nodeDir() .. '/fhir_validate/?.lua;' .. package.path
-local Validate = require 'fhir_validate'
-
--- Route a rejected resource. With an Error Topic configured the original bytes
--- go there so a downstream handler can quarantine or alert; otherwise the
--- resource simply stops here.
-local function route(Data, Action, Topic, Status)
-   if Action == 'Push to error route' and Topic and Topic ~= '' then
-      linkiir.flow.push{ data = Data, topic = Topic,
-                         metadata = { fhir_validation = Status } }
-      return true
-   end
-   return false
-end
+local FhirValidate = require 'fhir_validate'
 
 function main(Data)
-   local Fhir, Config = Validate.fromNodeConfig()
+   local Config = linkiir.config.node()
 
-   local Status, Outcome, Reason = Fhir:check(Data)
+   -- The two node settings. The FHIR server URL is required; the profile is
+   -- optional and only used when the server can resolve it.
+   local FHIR_BASE_URL    = Config['FHIR Server URL']
+   local PROFILE_CANONICAL = Config['FHIR Profile']
 
-   if Status == 'valid' then
-      -- Valid by FHIR includes "valid with warnings". Block those only when the
-      -- operator has asked to.
-      if Config['Block Warnings'] and Outcome then
-         for _, Issue in ipairs(Outcome.issue or {}) do
-            if tostring(Issue.severity) == 'warning' then
-               linkiir.log.warn('FHIR Validator: valid but warnings present and '
-                  .. 'Block Warnings is on - not forwarding. '
-                  .. Validate.summarize(Outcome))
-               route(Data, Config['On Invalid'], Config['Error Topic'], 'warning-blocked')
-               return
-            end
-         end
-      end
-      -- Forward the exact bytes that were validated.
-      linkiir.flow.push{ data = Data, metadata = { fhir_validation = 'valid' } }
-      linkiir.log.info('FHIR Validator: valid, forwarded.')
-      return
+   if not FHIR_BASE_URL or FHIR_BASE_URL == '' then
+      error('FHIR Validator: no FHIR Server URL is configured')
    end
 
-   if Status == 'invalid' then
-      linkiir.log.error('FHIR Validator: invalid - ' .. Validate.summarize(Outcome))
-      route(Data, Config['On Invalid'], Config['Error Topic'], 'invalid')
-      return
+   local Result = FhirValidate.validate{
+      data    = Data,
+      baseUrl = FHIR_BASE_URL,
+      profile = PROFILE_CANONICAL,
+   }
+
+   if not Result.valid then
+      -- Invalid or indeterminate: stop. The summary carries issue severity and
+      -- codes only, never the submitted resource, so it is safe to surface.
+      -- Raising an error hands the failure to Linkiir's own error handling and
+      -- prevents the resource being forwarded downstream.
+      error('FHIR validation failed (' .. Result.status .. '): ' .. Result.summary)
    end
 
-   -- unknown: no verdict was obtained. Fail closed.
-   linkiir.log.warn('FHIR Validator: unknown - ' .. tostring(Reason)
-      .. ' (failing closed, not forwarding)')
-   route(Data, Config['On Unknown'], Config['Error Topic'], 'unknown')
+   -- Valid (including valid-with-warnings): forward the ORIGINAL bytes,
+   -- unchanged, to the next node.
+   linkiir.flow.push{ data = Data }
+   linkiir.log.info('FHIR Validator: valid, forwarded. ' .. Result.summary)
 end
-
--- ---------------------------------------------------------------------------
--- Using the library directly (the more common use)
---
--- The verdict logic is the fhir_validate library, so another node - or an
--- adapter about to send - can validate before it acts, without this node in
--- the workflow:
---
---    package.path = linkiir.sys.nodeDir() .. '/fhir_validate/?.lua;' .. package.path
---    local Validate = require 'fhir_validate'
---    local V = Validate.new{ BaseUrl = 'https://hapi.fhir.org/baseR4' }
---
---    local Status = V:check(PatientJson)
---    if Status ~= 'valid' then
---       linkiir.log.error('refusing to send a resource that did not validate')
---       return
---    end
---    -- only now hand PatientJson to the FHIR adapter that will create it
--- ---------------------------------------------------------------------------
