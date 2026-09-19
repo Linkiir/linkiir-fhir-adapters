@@ -1,0 +1,37 @@
+{
+  "resourceType": "Patient",
+  "identifier": [
+    {
+      "system": null,
+      "value": null
+    }
+  ],
+  "active": null,
+  "name": [
+    {
+      "family": null,
+      "given": [
+        null
+      ]
+    }
+  ],
+  "telecom": [
+    {
+      "system": null,
+      "value": null
+    }
+  ],
+  "gender": null,
+  "birthDate": null,
+  "address": [
+    {
+      "line": [
+        null
+      ],
+      "city": null,
+      "state": null,
+      "postalCode": null,
+      "country": null
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "identifier_value": "DEMO-123",
+  "given": "Jane",
+  "family": "Smith",
+  "active": false,
+  "gender": "F",
+  "birthDate": "1980-05-15",
+  "phone": "555-0123",
+  "email": "jane.smith@example.com",
+  "addressLine": "123 Main Street",
+  "city": "Springfield",
+  "state": "IL",
+  "postalCode": "62704",
+  "country": "US"
+}

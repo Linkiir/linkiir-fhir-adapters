@@ -1,0 +1,5 @@
+{
+  "name": "fhir_creator",
+  "description": "Small helpers for hand-building a FHIR resource in a node's main.lua and serializing it to JSON. Fhir.new(type) starts a resource; addIdentifier/addName/addTelecom/addAddress append repeating elements only when their inputs are present; gender() normalizes common administrative-gender codes; toJson() serializes with linkiir.json. Absent, empty, and JSON-null inputs are omitted by construction, so the output carries only populated fields and needs no generic null cleaner - but it is not a validation engine: the FHIR Validator still checks structure, version and profiles. Copy the fhir_creator/ folder into a node and add nodeDir()/?/init.lua to package.path.",
+  "version": "1.0.0"
+}
