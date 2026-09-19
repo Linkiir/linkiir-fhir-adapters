@@ -2,8 +2,9 @@
 -- Source HTTP node serving a browser UI for FHIR resource template generation
 -- and profile authoring, across the FHIR versions the node ships.
 
-package.path = linkiir.sys.nodeDir() .. '/fhir_profiling/?.lua;' .. package.path
-
+-- The runtime puts this node's directory on package.path, and the fhir_profiling
+-- library (all its modules) ships flat here, so it is required by name with no
+-- path setup.
 local FhirProfiling = require 'fhir_profiling'
 
 -- A multi-version portal: the served UI can switch FHIR version at request

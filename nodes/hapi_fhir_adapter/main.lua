@@ -14,10 +14,9 @@
 --   the shape of what gets pushed                     ->  this script
 --   how the FHIR server is called                     ->  hapi_fhir library
 -- ---------------------------------------------------------------------------
--- The library modules live in the hapi_fhir/ subfolder, so add it to the module
--- search path before requiring them.
-package.path = linkiir.sys.nodeDir() .. '/hapi_fhir/?.lua;' .. package.path
-
+-- The runtime puts this node's directory on package.path, and the hapi_fhir
+-- library (all its modules) ships flat here, so it is required by name with no
+-- path setup.
 local HapiFhir = require 'hapi_fhir'
 
 local DEFAULT_RESOURCE = 'Patient'

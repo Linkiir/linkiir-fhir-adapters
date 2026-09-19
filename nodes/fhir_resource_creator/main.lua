@@ -14,7 +14,8 @@
 -- To map a different resource, edit RESOURCE_TYPE and the mapping below, using
 -- templates/<resource>.json as your field reference.
 -- ---------------------------------------------------------------------------
-package.path = linkiir.sys.nodeDir() .. '/?/init.lua;' .. package.path
+-- The runtime puts this node's directory on package.path, and the fhir_creator
+-- library ships flat here, so it is required by name with no path setup.
 local Fhir = require 'fhir_creator'
 
 -- The FHIR version this mapping was designed against. Informational only: it

@@ -12,7 +12,8 @@
 -- All the HTTP handling and OperationOutcome interpretation live in the
 -- fhir_validate library. The node reads two settings and decides pass/stop.
 -- ---------------------------------------------------------------------------
-package.path = linkiir.sys.nodeDir() .. '/fhir_validate/?.lua;' .. package.path
+-- The runtime puts this node's directory on package.path, and the fhir_validate
+-- library ships flat here, so it is required by name with no path setup.
 local FhirValidate = require 'fhir_validate'
 
 function main(Data)
