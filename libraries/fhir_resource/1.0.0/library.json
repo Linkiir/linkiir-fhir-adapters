@@ -1,5 +1,0 @@
-{
-  "name": "fhir_resource",
-  "description": "FHIR Patient resource builder. Parses inbound patient data, maps it onto a FHIR R4 Patient template, strips JSON nulls from unused fields, and returns the clean serialised resource. No network or authentication.",
-  "version": "1.0.0"
-}

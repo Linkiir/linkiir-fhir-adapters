@@ -81,15 +81,15 @@ Serves a browser UI for FHIR profiling: lists available FHIR resources and types
 
 ### FHIR Resource Creator
 
-Maps an inbound JSON message onto a FHIR R4 Patient or Observation resource, strips unused fields, and pushes the clean resource downstream as JSON. The resource type and identifier system are configurable; with no configuration it builds a Patient, unchanged from earlier versions.
+Maps an inbound JSON message onto a FHIR R4 Patient resource with a small, readable mapping and pushes the clean resource downstream as JSON. It adds only the fields the message carries, so there is no empty scaffolding and no null placeholders. The mapping lives in the node's script, using the `fhir_creator` helper library.
 
-`LKFHIR_FHIR_RESOURCE_CREATOR` · transform node · version 1.1.0 · 4 configuration fields · library `fhir_resource` 1.1.0
+`LKFHIR_FHIR_RESOURCE_CREATOR` · transform node · version 1.1.0 · no configuration fields · library `fhir_creator` 1.0.0
 
 ### FHIR Validator
 
 Validates an inbound FHIR resource against a FHIR server's `$validate` operation and forwards it downstream only when it validates. Returns a strict verdict — valid, invalid, or unknown — and fails closed: anything short of a conclusive pass is not forwarded. Validation is remote; the FHIR server is the authority. Place it before a FHIR destination (Epic, HAPI, and so on) to stop an invalid resource being sent.
 
-`LKFHIR_FHIR_VALIDATOR` · transform node · version 1.0.0 · 9 configuration fields · library `fhir_validate` 1.0.0
+`LKFHIR_FHIR_VALIDATOR` · transform node · version 1.0.0 · 2 configuration fields · library `fhir_validate` 1.0.0
 
 ### ModMed Adapter
 
@@ -119,7 +119,7 @@ Shared Lua modules the adapters above depend on. A node pins the exact version i
 | `epic_fhir` | 1.0.0 | EPIC Adapter |
 | `fhir_profiling` | 1.1.0 (1.0.0 also shipped) | FHIR Profiling Tools |
 | `hapi_fhir` | 1.0.0 | HAPI FHIR Adapter |
-| `fhir_resource` | 1.1.0 (1.0.0 also shipped) | FHIR Resource Creator |
+| `fhir_creator` | 1.0.0 | FHIR Resource Creator |
 | `fhir_validate` | 1.0.0 | FHIR Validator |
 | `modmed_fhir` | 1.0.0 | ModMed Adapter |
 
@@ -153,11 +153,11 @@ FHIR resource profiling and profile authoring tool. Loads FHIR R4 specification 
 
 Modules: `fhir_profiling.lua`, `fhir_profiling_create.lua`, `fhir_profiling_db.lua`, `fhir_profiling_web.lua`, `fhir_profiling_profile.lua`
 
-### `fhir_resource` 1.1.0
+### `fhir_creator` 1.0.0
 
-FHIR R4 resource builder. Maps an inbound JSON message onto a Patient or Observation template, strips unused fields, and returns the clean serialised resource. Array and object shapes are tagged explicitly, so a sparse input can no longer produce a wrong JSON shape. No network or authentication. Version 1.0.0 remains published for nodes pinned to it.
+FHIR resource builder helpers for a hand-written mapping. Start a resource, then append name, identifier, telecom and address, each added only when its input is present, and serialise to JSON. Absent, empty and null inputs are omitted by construction, so the output carries only populated fields and needs no null cleanup. No network or authentication. Copy the fhir_creator/ folder into a node and add it to package.path.
 
-Modules: `fhir_resource.lua`, `fhir_resource_clean.lua`
+Modules: `init.lua`
 
 ### `fhir_validate` 1.0.0
 

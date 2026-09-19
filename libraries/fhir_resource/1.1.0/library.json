@@ -1,5 +1,0 @@
-{
-  "name": "fhir_resource",
-  "description": "FHIR R4 resource builder. Maps an inbound JSON message onto a Patient or Observation template, strips unused fields, and returns the clean serialised resource. Array and object shapes are tagged explicitly, so a sparse input cannot produce a wrong JSON shape. The resource type and identifier system are read from node config; with none it builds a Patient. No network or authentication. Copy the fhir_resource/ folder into a node and add it to package.path.",
-  "version": "1.1.0"
-}
