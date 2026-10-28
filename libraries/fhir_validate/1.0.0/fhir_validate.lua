@@ -57,10 +57,24 @@ Client.__index = Client
 
 -- Classify a linkiir.link.web response into a verdict.
 --   returns status ('valid'|'invalid'|'unknown'), outcome table or nil, reason
-local function classify(Response)
-   -- linkiir.link.web returns nil, err on transport failure.
+local function classify(Response, WebErr)
+   -- linkiir.link.web returns nil, err on transport failure. Report the reason
+   -- (connection refused, DNS, TLS/certificate, timeout) rather than a bare
+   -- "no response", so a server with no route to the FHIR endpoint is
+   -- diagnosable from the log instead of looking like a mystery.
    if not Response then
-      return 'unknown', nil, 'no response from the validation server'
+      -- The error is a { code=, message= } table (linkiir I/O-style error), not
+      -- a string, so read those fields; fall back gracefully if it is a plain
+      -- string or absent.
+      local Reason
+      if type(WebErr) == 'table' then
+         Reason = '[' .. tostring(WebErr.code) .. '] ' .. tostring(WebErr.message)
+      elseif WebErr ~= nil then
+         Reason = tostring(WebErr)
+      else
+         Reason = 'unknown transport error'
+      end
+      return 'unknown', nil, 'could not reach the validation server: ' .. Reason
    end
    -- live = false: nothing was sent, so there is no verdict. Not a pass.
    if Response.simulated then
@@ -143,7 +157,12 @@ function Client:check(FhirJson, Opts)
    if Live == nil then Live = self.live end
    if Live == nil then Live = true end
 
-   local Response = linkiir.link.web.post{
+   -- linkiir.link.web.post returns (Response) on success and (nil, err) on a
+   -- transport failure - could not connect, DNS, TLS/certificate, or timeout.
+   -- Capture the second value so the reason is surfaced instead of discarded:
+   -- a bare nil Response otherwise becomes an opaque "no response" with no clue
+   -- that, for example, the server has no outbound route to the FHIR endpoint.
+   local Response, WebErr = linkiir.link.web.post{
       url       = Url,
       params    = Params,
       body      = FhirJson,     -- byte-for-byte; never re-serialised
@@ -157,7 +176,7 @@ function Client:check(FhirJson, Opts)
       live      = Live,
    }
 
-   return classify(Response)
+   return classify(Response, WebErr)
 end
 
 -- The most output any one summary line will list, so a server that returns
