@@ -1,0 +1,11 @@
+{
+  "name": "modmed_fhir",
+  "description": "ModMed FHIR client. Handles password and refresh-token authentication with an API key and provides search, read and create helpers. Copy the modmed_fhir/ folder into a node and add it to package.path.",
+  "version": "1.1.0",
+  "origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "name": "modmed_fhir",
+    "version": "1.0.0",
+    "installed_at": "2026-10-28T20:11:13+00:00"
+  }
+}
