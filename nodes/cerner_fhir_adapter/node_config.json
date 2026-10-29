@@ -73,5 +73,94 @@
     "cerner_fhir": "1.0.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/cerner_fhir_adapter",
+    "commit": "f122a0d7642d8ebba7b70b664e5a95580baca751",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "cerner_fhir/cerner_fhir.lua",
+      "cerner_fhir/cerner_fhir_auth.lua",
+      "cerner_fhir/cerner_fhir_http.lua",
+      "cerner_fhir/cerner_fhir_jwt.lua",
+      "cerner_fhir/cerner_fhir_token.lua",
+      "main.lua",
+      "samples/empty.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, the runtime invokes the polling script.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Base URL",
+        "field_type": "string",
+        "description": "The base Cerner FHIR endpoint for your tenant. This must match the tenant used when issuing OAuth tokens and should not include resource paths like '/Patient'. A trailing slash is added if missing.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client ID",
+        "field_type": "string",
+        "description": "The OAuth client identifier assigned to your Cerner application on CernerCentral.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Private Key Path",
+        "field_type": "file_path",
+        "description": "Absolute path to the PEM-encoded RSA private key whose public key is registered in the JWKS on the CernerCentral System Account. Read at authentication time and never copied into the node config.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Key ID",
+        "field_type": "string",
+        "description": "The kid (Key ID) identifying which public key in your JWKS Cerner should use to verify the JWT signature. Placed in the JWT header.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Scopes",
+        "field_type": "string",
+        "description": "SMART on FHIR OAuth scopes requested when obtaining an access token, space-separated. Cerner requires scopes on the token request.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Resource Type",
+        "field_type": "string",
+        "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "Search parameters as a URL query string, for example family=Smith&birthdate=1970-01-01. Leave empty to search without filters.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, FHIR requests are simulated and no data leaves the runtime, which is useful while wiring up a workflow. Authentication is always performed live so credential problems surface immediately.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Whether to verify the Cerner server's TLS certificate. Leave on outside of local testing against a proxy.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
