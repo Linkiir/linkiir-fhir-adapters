@@ -1,0 +1,11 @@
+{
+  "name": "athena_health",
+  "description": "Athena Health client. Handles client_credentials OAuth authentication and provides search, create and request helpers for both the proprietary REST API and the FHIR R4 API. Copy the athena_health/ folder into a node and add it to package.path.",
+  "version": "1.1.0",
+  "origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "name": "athena_health",
+    "version": "1.0.0",
+    "installed_at": "2026-10-28T20:11:10+00:00"
+  }
+}

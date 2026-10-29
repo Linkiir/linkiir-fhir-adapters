@@ -64,8 +64,89 @@
     }
   ],
   "library_deps": {
-    "athena_health": "1.0.0"
+    "athena_health": "1.1.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.1.0",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/athena_adapter",
+    "commit": "f122a0d7642d8ebba7b70b664e5a95580baca751",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "athena_health/athena_health.lua",
+      "athena_health/athena_health_auth.lua",
+      "athena_health/athena_health_http.lua",
+      "athena_health/athena_health_token.lua",
+      "main.lua",
+      "samples/empty.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, the runtime invokes the polling script.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Base URL",
+        "field_type": "string",
+        "description": "Root URL of the Athena Health API platform. The token endpoint and API paths are appended to it. Use https://api.preview.platform.athenahealth.com/ for sandbox. A trailing slash is added if omitted.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client ID",
+        "field_type": "string",
+        "description": "The OAuth client identifier assigned to your application on the Athena developer portal.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client Secret",
+        "field_type": "password",
+        "description": "The OAuth client secret paired with the Client ID. Never stored in plaintext.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Scopes",
+        "field_type": "string",
+        "description": "OAuth scopes requested when obtaining an access token, space-separated.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Practice ID",
+        "field_type": "string",
+        "description": "The Athena practice identifier used in proprietary REST API paths (v1/<practice_id>/...).",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "Search parameters as a URL query string, for example firstname=John&lastname=Smith. Leave empty to search without filters.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, API requests are simulated and no data leaves the runtime, which is useful while wiring up a workflow. Authentication is always performed live so credential problems surface immediately.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Whether to verify the Athena server's TLS certificate. Leave on outside of local testing against a proxy.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
