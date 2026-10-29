@@ -1,0 +1,11 @@
+{
+  "name": "epic_fhir",
+  "description": "Epic FHIR client. Handles SMART backend services authentication (signed JWT client assertion) and provides search, read, create, update and operation helpers. Copy the epic_fhir/ folder into a node and add it to package.path.",
+  "version": "1.1.0",
+  "origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "name": "epic_fhir",
+    "version": "1.0.0",
+    "installed_at": "2026-10-28T20:11:10+00:00"
+  }
+}
