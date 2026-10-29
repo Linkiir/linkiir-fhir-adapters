@@ -72,5 +72,91 @@
     "epic_fhir": "1.0.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/epic_adapter",
+    "commit": "f122a0d7642d8ebba7b70b664e5a95580baca751",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "epic_fhir/epic_fhir.lua",
+      "epic_fhir/epic_fhir_auth.lua",
+      "epic_fhir/epic_fhir_http.lua",
+      "epic_fhir/epic_fhir_jwt.lua",
+      "epic_fhir/epic_fhir_token.lua",
+      "main.lua",
+      "samples/empty.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, the runtime invokes the polling script.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Base URL",
+        "field_type": "string",
+        "description": "Root URL of the Epic Interconnect FHIR endpoint. The token endpoint and /api/FHIR paths are appended to it, so a trailing slash is expected (one is added if omitted).",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client ID",
+        "field_type": "string",
+        "description": "The non-production or production client ID assigned when the app was registered on the Epic App Orchard / open.epic.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Private Key Path",
+        "field_type": "file_path",
+        "description": "Absolute path to the PEM-encoded RSA private key whose public key is registered with Epic. Used to sign the RS384 JWT client assertion; it is read at authentication time and never copied into the node config.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "FHIR Version",
+        "field_type": "list",
+        "description": "FHIR release to target. Becomes the version segment of /api/FHIR/<version>/.",
+        "list_options": [
+          "R4",
+          "STU3",
+          "DSTU2"
+        ],
+        "depends_on": null
+      },
+      {
+        "label": "Resource Type",
+        "field_type": "string",
+        "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "Search parameters as a URL query string, for example family=Smith&birthdate=1970-01-01. Leave empty to search without filters. Epic requires at least one identifying parameter for most resource types.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, FHIR requests are simulated and no data leaves the runtime, which is useful while wiring up a workflow. Authentication is always performed live so credential problems surface immediately.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Whether to verify the Epic server's TLS certificate. Leave on outside of local testing against a proxy.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
