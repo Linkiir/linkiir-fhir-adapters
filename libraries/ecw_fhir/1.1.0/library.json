@@ -1,0 +1,11 @@
+{
+  "name": "ecw_fhir",
+  "description": "eCW FHIR client. Handles JWT client-credentials authentication with a separate token endpoint and provides search, read, create, parameters and bulk export helpers. Copy the ecw_fhir/ folder into a node and add it to package.path.",
+  "version": "1.1.0",
+  "origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "name": "ecw_fhir",
+    "version": "1.0.0",
+    "installed_at": "2026-10-28T20:11:13+00:00"
+  }
+}
