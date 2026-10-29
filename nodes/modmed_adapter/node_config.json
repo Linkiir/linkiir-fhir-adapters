@@ -67,5 +67,86 @@
     "modmed_fhir": "1.0.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/modmed_adapter",
+    "commit": "f122a0d7642d8ebba7b70b664e5a95580baca751",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "main.lua",
+      "modmed_fhir/modmed_fhir.lua",
+      "modmed_fhir/modmed_fhir_auth.lua",
+      "modmed_fhir/modmed_fhir_http.lua",
+      "modmed_fhir/modmed_fhir_token.lua",
+      "samples/empty.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, the runtime invokes the polling script.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Base URL",
+        "field_type": "string",
+        "description": "Root URL of the ModMed FHIR endpoint. The token path (ws/oauth2/grant) and FHIR path (fhir/v2/) are appended to it, so a trailing slash is expected (one is added if omitted).",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Username",
+        "field_type": "string",
+        "description": "ModMed account username used for the initial password grant.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Password",
+        "field_type": "password",
+        "description": "ModMed account password used for the initial password grant.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "API Key",
+        "field_type": "password",
+        "description": "The x-api-key value sent on every request, including the token exchange.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Resource Type",
+        "field_type": "string",
+        "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "Search parameters as a URL query string, for example _count=20&family=Smith. Leave empty to search without filters.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, FHIR requests are simulated and no data leaves the runtime. Authentication is always performed live so credential problems surface immediately.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Whether to verify the ModMed server's TLS certificate. Leave on outside of local testing against a proxy.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
