@@ -119,5 +119,145 @@
     "hapi_fhir": "1.0.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/hapi_fhir_adapter",
+    "commit": "c1379236063505912f8030ea5068f8efceac6e01",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "hapi_fhir.lua",
+      "hapi_fhir_auth.lua",
+      "hapi_fhir_http.lua",
+      "hapi_fhir_token.lua",
+      "main.lua",
+      "samples/capability_r4.json",
+      "samples/patient_r4.json",
+      "samples/searchset_bundle_r4.json"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, to poll the FHIR server. 60000 is one minute.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "FHIR Base URL",
+        "field_type": "string",
+        "description": "The FHIR base URL, with no trailing resource path. The public HAPI test server is https://hapi.fhir.org/baseR4 (or /baseR5). For Smile OmniVera, use the endpoint Smile supplied for your deployment and tenant.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "FHIR Version",
+        "field_type": "list",
+        "description": "Which FHIR release this endpoint serves. Sent as the fhirVersion parameter on the Accept header. Advisory only: a server that hosts one release ignores it, so the base URL still has to point at the right release.",
+        "list_options": [
+          "FHIR R4 (4.0.1)",
+          "FHIR R5 (5.0.0)"
+        ],
+        "depends_on": null
+      },
+      {
+        "label": "Authentication",
+        "field_type": "list",
+        "description": "How to authenticate. 'None' sends no Authorization header and suits the public HAPI test server or a local hapi-fhir-jpaserver. 'OAuth2 Backend Services' is the unattended flow a production Smile OmniVera endpoint normally expects. Only the fields for the mode you choose are used.",
+        "list_options": [
+          "None (public test endpoint)",
+          "OAuth2 Backend Services",
+          "Bearer Token",
+          "Basic"
+        ],
+        "depends_on": null
+      },
+      {
+        "label": "Token URL",
+        "field_type": "string",
+        "description": "OAuth2 only. The token endpoint to exchange credentials at. Leave empty to discover it from the FHIR base URL's .well-known/smart-configuration document; set it explicitly when the server does not publish one or its authorization server sits elsewhere.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client ID",
+        "field_type": "string",
+        "description": "OAuth2 only. The client id issued for this integration.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client Secret",
+        "field_type": "password",
+        "description": "OAuth2 only. The client secret issued for this integration. Stored encrypted and decrypted only when the script reads it.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Scope",
+        "field_type": "string",
+        "description": "OAuth2 only. Space-separated scopes to request, for example 'system/*.read' for read-only access or 'system/Patient.read system/Observation.read' to narrow it. Leave empty to let the server apply its default.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Bearer Token",
+        "field_type": "password",
+        "description": "Bearer Token mode only. A token issued outside this adapter. Stored encrypted. Note the adapter cannot refresh it, so a short-lived token will start failing when it expires - use OAuth2 for an unattended feed.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Username",
+        "field_type": "string",
+        "description": "Basic mode only. The username to send in the Authorization header.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Password",
+        "field_type": "password",
+        "description": "Basic mode only. The password to send in the Authorization header. Stored encrypted.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Resource Type",
+        "field_type": "string",
+        "description": "The FHIR resource type to search, for example Patient, Observation or Encounter.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "FHIR search parameters as a query string, for example 'family=Smith&birthdate=1970-01-01'. Use _count to set the page size and _lastUpdated to fetch only recent changes. Leave empty to return everything the server offers on the first page.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Max Pages",
+        "field_type": "number",
+        "description": "How many pages of search results to follow. A FHIR server returns one page plus a 'next' link, so 1 fetches only the first page. Raise it to walk further, or set 0 for no limit - be careful, an unfiltered search can be very large.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, requests are prepared and logged but never sent. Use it to confirm the URL and credentials are configured before touching a real server.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Verify the server's TLS certificate. Leave on. Turn it off only for a local test server with a self-signed certificate.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
