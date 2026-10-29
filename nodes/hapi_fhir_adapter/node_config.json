@@ -116,10 +116,10 @@
     }
   ],
   "library_deps": {
-    "hapi_fhir": "1.0.0"
+    "hapi_fhir": "1.1.0"
   },
   "config_version": 1,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "template_origin": {
     "catalog": "linkiir-fhir-adapters",
     "template_id": "group:linkiir-fhir-adapters/hapi_fhir_adapter",
