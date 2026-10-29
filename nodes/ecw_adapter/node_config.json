@@ -90,5 +90,112 @@
     "ecw_fhir": "1.0.0"
   },
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-fhir-adapters",
+    "template_id": "group:linkiir-fhir-adapters/ecw_adapter",
+    "commit": "f122a0d7642d8ebba7b70b664e5a95580baca751",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "ecw_fhir/ecw_fhir.lua",
+      "ecw_fhir/ecw_fhir_auth.lua",
+      "ecw_fhir/ecw_fhir_http.lua",
+      "ecw_fhir/ecw_fhir_jwt.lua",
+      "ecw_fhir/ecw_fhir_token.lua",
+      "main.lua",
+      "samples/empty.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, the runtime invokes the polling script.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Base URL",
+        "field_type": "string",
+        "description": "Root URL of the eCW FHIR endpoint. Resource paths are appended to it, so a trailing slash is expected (one is added if omitted).",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Auth URL",
+        "field_type": "string",
+        "description": "Root URL of the eCW OAuth server. The token endpoint path oauth/oauth2/token is appended to it. This is separate from the FHIR base URL.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Client ID",
+        "field_type": "string",
+        "description": "The client ID assigned when the app was registered with eCW.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Private Key Path",
+        "field_type": "file_path",
+        "description": "Absolute path to the PEM-encoded RSA private key whose public key is registered with eCW. Used to sign the RS384 JWT client assertion.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Key ID",
+        "field_type": "string",
+        "description": "The key identifier (kid) placed in the JWT header. Must match the key ID registered with eCW for your public key.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "FHIR Version",
+        "field_type": "list",
+        "description": "FHIR release to target.",
+        "list_options": [
+          "R4",
+          "STU3",
+          "DSTU2"
+        ],
+        "depends_on": null
+      },
+      {
+        "label": "Scopes",
+        "field_type": "string",
+        "description": "OAuth scopes to request. Space-separated. eCW requires scopes on the token request (unlike Epic). Defaults to system/Patient.read system/Medication.read system/Encounter.read if left empty.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Resource Type",
+        "field_type": "string",
+        "description": "FHIR resource type to search on each poll, for example Patient, Encounter or Observation.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Search Query",
+        "field_type": "string",
+        "description": "Search parameters as a URL query string, for example family=Smith&birthdate=1970-01-01. Leave empty to search without filters.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, FHIR requests are simulated and no data leaves the runtime. Authentication is always performed live so credential problems surface immediately.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Verify TLS",
+        "field_type": "bool",
+        "description": "Whether to verify the eCW server's TLS certificate. Leave on outside of local testing.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
